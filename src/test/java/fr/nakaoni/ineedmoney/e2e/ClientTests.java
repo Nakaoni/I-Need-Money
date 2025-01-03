@@ -16,17 +16,20 @@ public class ClientTests {
     @Value(value = "${local.server.port}")
     private int port;
 
+    private String baseUri() { return "http://localhost:" + port; }
+
     @Test void givenIAmAClient_WhenIRegister() throws Exception {
         ResponseSpec response = WebTestClient
             .bindToServer()
-                .baseUrl("http://localhost:" + port)
+                .baseUrl(baseUri())
                 .build()
             .post()
                 .uri("/clients")
             .exchange();
 
         itShouldRegisterANewClient(response);
-        itShouldAllocateANewId(response);
+        ClientResponse newClient = itShouldAllocateANewId(response);
+        itShouldShowWhereToLocateNewClient(response, newClient);
     }
 
     private void itShouldRegisterANewClient(ResponseSpec response) {
@@ -35,12 +38,22 @@ public class ClientTests {
            .isCreated();
     }
 
-    private void itShouldAllocateANewId(ResponseSpec response) {
-        response
+    private ClientResponse itShouldAllocateANewId(ResponseSpec response) {
+        return response
             .expectBody(ClientResponse.class)
             .value(client -> {
                 assertThat(client.id()).isNotEqualTo(new UUID(0, 0));
                 assertThat(client.id()).isNotNull();
-            });
+            })
+            .returnResult()
+            .getResponseBody()
+        ;
     }
+
+    private void itShouldShowWhereToLocateNewClient(ResponseSpec response, ClientResponse newClient) {
+        response
+            .expectHeader()
+            .location(baseUri() + "/clients/" + newClient.id());
+    }
+
 }

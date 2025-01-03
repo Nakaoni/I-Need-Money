@@ -11,8 +11,8 @@ public class ClientController {
 
     @PostMapping("/clients")
     ResponseEntity<Client> registerNewClient() {
-        Client client = Client.register();
-        return ResponseEntity.created(null).body(client);
+        Client newClient = Client.register();
+        return ResponseEntity.created(null).body(newClient);
     }
 
 }

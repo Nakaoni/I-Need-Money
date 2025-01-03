@@ -4,12 +4,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.UUID;
+
 @RestController
 public class ClientController {
 
     @PostMapping("/clients")
-    ResponseEntity<String> registerNewClient() {
-        return ResponseEntity.created(null).body("");
+    ResponseEntity<Client> registerNewClient() {
+        return ResponseEntity.created(null).body(new Client(UUID.randomUUID()));
     }
 
 }

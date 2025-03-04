@@ -20,7 +20,7 @@ public final class Amount {
         this.currency = currency;
     }
 
-    public int amount() {
+    public int value() {
         return value;
     }
 

@@ -14,7 +14,7 @@ class AmountTest {
         Currency expectedCurrency = Currency.getInstance("EUR");
         Amount m = new Amount(expectedAmount, expectedCurrency);
 
-        assertEquals(expectedAmount, m.amount());
+        assertEquals(expectedAmount, m.value());
         assertEquals(expectedCurrency, m.currency());
     }
 

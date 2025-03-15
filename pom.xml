@@ -10,6 +10,7 @@
     <modules>
         <module>domain</module>
         <module>desktop</module>
+        <module>web</module>
     </modules>
 
     <properties>
@@ -29,6 +30,10 @@
                         <source>${maven.compiler.source}</source>
                         <target>${maven.compiler.target}</target>
                     </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
                 </plugin>
                 <!-- Executes Unit tests -->
                 <plugin>

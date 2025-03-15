@@ -10,7 +10,7 @@
     <modules>
         <module>domain</module>
         <module>desktop</module>
-        <module>web</module>
+        <module>api</module>
     </modules>
 
     <properties>
@@ -57,7 +57,7 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>5.8.1</version>
+            <version>5.12.1</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

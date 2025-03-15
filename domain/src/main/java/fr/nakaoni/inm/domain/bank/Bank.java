@@ -7,7 +7,8 @@ public class Bank {
 
     private String name;
 
-    public Bank(String name) {
+    public Bank(Long id, String name) {
+        this.id = id;
         this.name = name;
     }
 

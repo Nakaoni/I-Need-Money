@@ -1,5 +1,6 @@
 package fr.nakaoni.inm.api.bank;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.nakaoni.inm.domain.bank.Bank;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,9 +13,11 @@ import java.util.Objects;
 public class BankEntity {
     @Id
     @GeneratedValue()
+    @JsonProperty
     private Long id;
 
     @Column(unique = true)
+    @JsonProperty
     private String name;
 
     public BankEntity() {}

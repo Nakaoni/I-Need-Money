@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -22,10 +23,12 @@ class BankControllerTests {
     void create() throws Exception {
         mvc.perform(
                 MockMvcRequestBuilders
-                        .request(HttpMethod.POST, "/api/v1/banks")
+                        .request(HttpMethod.GET, "/api/v1/banks/1")
                         .accept(MediaType.APPLICATION_JSON)
                 )
-                .andExpect(status().isCreated())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().json("{\"id\":  1, \"name\":  \"Boursorama\"}"))
         ;
     }
 }

@@ -30,7 +30,7 @@ public class JpaBankRepository implements BankRepository {
     }
 
     @Override
-    public void save(Bank bank) {
-        repository.save(BankEntity.fromDomain(bank));
+    public Bank save(Bank bank) {
+        return repository.save(BankEntity.fromDomain(bank)).toDomain();
     }
 }

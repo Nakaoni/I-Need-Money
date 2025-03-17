@@ -1,10 +1,14 @@
 package fr.nakaoni.inm.api.bank;
 
 import fr.nakaoni.inm.domain.bank.BankRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -27,17 +31,26 @@ public class BankController {
     public ResponseEntity<BankEntity> create(@RequestBody BankEntity createBankRequest) {
         BankEntity bank = new BankEntity(createBankRequest.name());
 
-        bankRepository.save(bank.toDomain());
+        bank = BankEntity.fromDomain(bankRepository.save(bank.toDomain()));
 
-        return ResponseEntity.created(null).contentType(MediaType.APPLICATION_JSON).body(bank);
+        URI bankUri = bankUri(bank.id());
+
+        return ResponseEntity.created(bankUri).contentType(MediaType.APPLICATION_JSON).body(bank);
+    }
+
+    URI bankUri(Long id) {
+        return ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(id).toUri();
     }
 
     @GetMapping("/api/v1/banks/{id}")
     public ResponseEntity<?> show(@PathVariable(value = "id") Long id) {
-        try {
-            return ResponseEntity.ok(bankRepository.findById(id).map(BankEntity::fromDomain).orElseThrow());
-        } catch (Exception e) {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok(bankRepository
+                .findById(id)
+                .map(BankEntity::fromDomain)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND))
+        );
     }
 }

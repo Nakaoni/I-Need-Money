@@ -11,7 +11,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.jdbc.Sql;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.event.annotation.BeforeTestClass;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -20,7 +22,6 @@ import java.util.List;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.fromMethodName;
 
-@Sql(scripts = "classpath:reset-database.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 @SpringBootTest
 @AutoConfigureMockMvc
 class BankControllerTests {
@@ -34,17 +35,19 @@ class BankControllerTests {
     @Autowired
     private BankEntityRepository bankEntityRepository;
 
-    @BeforeEach
-    void setup() throws Exception {
-        BankEntity boursoramaBankEntity = new BankEntity("Boursorama");
-        bankEntityRepository.save(boursoramaBankEntity);
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
-        BankEntity fortuneoBankEntity = new BankEntity("Fortuneo");
-        bankEntityRepository.save(fortuneoBankEntity);
+    @BeforeEach
+    void setup() {
     }
 
     @Test
+    @DirtiesContext
     void show() throws Exception {
+        BankEntity boursoramaBankEntity = new BankEntity("Boursorama");
+        bankEntityRepository.save(boursoramaBankEntity);
+
         BankEntity bankEntity = new BankEntity(1L, "Boursorama");
 
         String bankEntityJson = objectMapper.writeValueAsString(bankEntity);
@@ -61,11 +64,12 @@ class BankControllerTests {
     }
 
     @Test
+    @DirtiesContext
     void create() throws Exception {
         BankEntity bankEntity = new BankEntity("BforBank");
         String bankEntityJson = objectMapper.writeValueAsString(bankEntity);
 
-        BankEntity expectedBankEntity = new BankEntity(3L, "BforBank");
+        BankEntity expectedBankEntity = new BankEntity(1L, "BforBank");
         String expectedBankEntityJson = objectMapper.writeValueAsString(expectedBankEntity);
 
         mvc.perform(
@@ -88,9 +92,16 @@ class BankControllerTests {
     }
 
     @Test
+    @DirtiesContext
     void all() throws Exception {
+        BankEntity boursoramaBankEntity = new BankEntity("Boursorama");
+        bankEntityRepository.save(boursoramaBankEntity);
+
+        BankEntity fortuneoBankEntity = new BankEntity("Fortuneo");
+        bankEntityRepository.save(fortuneoBankEntity);
+
         List<BankEntity> expectedBankEntities = List.of(
-                new BankEntity(1L, "Boursorama"),
+                new BankEntity(1L,"Boursorama"),
                 new BankEntity(2L, "Fortuneo")
         );
         String expectedBankEntitiesJson = objectMapper.writeValueAsString(expectedBankEntities);

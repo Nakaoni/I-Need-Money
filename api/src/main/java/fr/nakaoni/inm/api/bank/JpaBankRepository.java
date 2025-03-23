@@ -33,4 +33,9 @@ public class JpaBankRepository implements BankRepository {
     public Bank save(Bank bank) {
         return repository.save(BankEntity.fromDomain(bank)).toDomain();
     }
+
+    @Override
+    public void remove(Bank bank) {
+        repository.delete(BankEntity.fromDomain(bank));
+    }
 }

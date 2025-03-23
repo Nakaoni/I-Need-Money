@@ -7,4 +7,5 @@ public interface BankRepository {
     Optional<Bank> findById(Long id);
     List<Bank> findAll();
     Bank save(Bank bank);
+    void remove(Bank bank);
 }

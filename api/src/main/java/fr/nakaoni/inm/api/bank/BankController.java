@@ -1,5 +1,6 @@
 package fr.nakaoni.inm.api.bank;
 
+import fr.nakaoni.inm.domain.bank.Bank;
 import fr.nakaoni.inm.domain.bank.BankRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -10,6 +11,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class BankController {
@@ -52,5 +54,29 @@ public class BankController {
                 .map(BankEntity::fromDomain)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND))
         );
+    }
+
+    @PatchMapping("/api/v1/banks/{id}")
+    public ResponseEntity<?> update(@PathVariable(value = "id") Long id, @RequestBody BankEntityDto bankEntityDto) {
+        Bank bank = bankRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        bank.setName(bankEntityDto.name());
+        bankRepository.save(bank);
+
+        return ResponseEntity
+                .noContent()
+                .build();
+    }
+
+    @DeleteMapping("/api/v1/banks/{id}")
+    public ResponseEntity<?> remove(@PathVariable(value = "id") Long id) {
+
+        Optional<Bank> bank = bankRepository.findById(id);
+
+        bank.ifPresent(bankRepository::remove);
+
+        return ResponseEntity
+                .accepted()
+                .build();
     }
 }

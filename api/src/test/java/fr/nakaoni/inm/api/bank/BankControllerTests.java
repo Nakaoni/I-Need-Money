@@ -33,13 +33,6 @@ class BankControllerTests {
     @Autowired
     private BankEntityRepository bankEntityRepository;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    @BeforeEach
-    void setup() {
-    }
-
     @Test
     @DirtiesContext
     void show() throws Exception {
@@ -52,7 +45,7 @@ class BankControllerTests {
 
         mvc.perform(
                         MockMvcRequestBuilders
-                                .request(HttpMethod.GET, "/api/v1/banks/1")
+                                .request(HttpMethod.GET, "/api/v1/accounts/1")
                                 .accept(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
@@ -72,7 +65,7 @@ class BankControllerTests {
 
         mvc.perform(
                         MockMvcRequestBuilders
-                                .post("/api/v1/banks")
+                                .post("/api/v1/accounts")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(bankEntityJson)
@@ -106,7 +99,7 @@ class BankControllerTests {
 
         mvc.perform(
                         MockMvcRequestBuilders
-                                .get("/api/v1/banks")
+                                .get("/api/v1/accounts")
                                 .accept(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
@@ -127,7 +120,7 @@ class BankControllerTests {
 
         mvc.perform(
                         MockMvcRequestBuilders
-                                .patch("/api/v1/banks/1")
+                                .patch("/api/v1/accounts/1")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(content)
@@ -146,7 +139,7 @@ class BankControllerTests {
 
         mvc.perform(
                         MockMvcRequestBuilders
-                                .delete("/api/v1/banks/1")
+                                .delete("/api/v1/accounts/1")
                                 .accept(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isAccepted())
@@ -158,7 +151,7 @@ class BankControllerTests {
     void removeNonExisting() throws Exception {
         mvc.perform(
                         MockMvcRequestBuilders
-                                .delete("/api/v1/banks/666")
+                                .delete("/api/v1/accounts/666")
                                 .accept(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isAccepted())

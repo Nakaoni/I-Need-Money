@@ -1,7 +1,6 @@
 package fr.nakaoni.inm.api.transaction;
 
-import fr.nakaoni.inm.domain.account.Account;
-import fr.nakaoni.inm.domain.account.AccountRepository;
+import fr.nakaoni.inm.domain.transaction.Transaction;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -10,70 +9,73 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @RestController
 public class TransactionController {
-    private final AccountRepository accountRepository;
+    private final TransactionRepository transactionRepository;
 
-    public TransactionController(AccountRepository accountRepository) {
-        this.accountRepository = accountRepository;
+    public TransactionController(TransactionRepository transactionRepository) {
+        this.transactionRepository = transactionRepository;
     }
 
-    @GetMapping("/api/v1/accounts")
-    public List<TransactionEntity> all() {
-        return accountRepository.findAll()
-                .stream()
-                .map(TransactionEntity::fromDomain)
-                .toList();
+    @GetMapping("/api/v1/transactions")
+    public Set<Transaction> all() {
+        return transactionRepository.findAll();
     }
 
-    @PostMapping("/api/v1/accounts")
-    public ResponseEntity<TransactionEntity> create(@RequestBody TransactionEntity createAccountRequest) {
-        TransactionEntity account = new TransactionEntity(createAccountRequest.name(), createAccountRequest.bank(), createAccountRequest.type());
+    @PostMapping("/api/v1/transactions")
+    public ResponseEntity<Transaction> create(@RequestBody Transaction createTransactionRequest) {
+        Transaction transaction = new Transaction(
+                createTransactionRequest.category(),
+                createTransactionRequest.payee(),
+                createTransactionRequest.account(),
+                createTransactionRequest.type(),
+                createTransactionRequest.amount(),
+                createTransactionRequest.createdAt()
+        );
 
-        account = TransactionEntity.fromDomain(accountRepository.save(account.toDomain()));
+        transaction = transactionRepository.save(transaction);
 
-        URI accountUri = AccountUri(account.id());
+        URI accountUri = showUri(transaction.id());
 
-        return ResponseEntity.created(accountUri).contentType(MediaType.APPLICATION_JSON).body(account);
+        return ResponseEntity.created(accountUri).contentType(MediaType.APPLICATION_JSON).body(transaction);
     }
 
-    URI AccountUri(Long id) {
+    URI showUri(Long id) {
         return ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(id).toUri();
     }
 
-    @GetMapping("/api/v1/accounts/{id}")
+    @GetMapping("/api/v1/transactions/{id}")
     public ResponseEntity<?> show(@PathVariable(value = "id") Long id) {
-        return ResponseEntity.ok(accountRepository
+        return ResponseEntity.ok(transactionRepository
                 .findById(id)
-                .map(TransactionEntity::fromDomain)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND))
         );
     }
 
-    @PatchMapping("/api/v1/accounts/{id}")
-    public ResponseEntity<?> update(@PathVariable(value = "id") Long id, @RequestBody TransactionEntityDto accountEntityDto) {
-        Account account = accountRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    @PatchMapping("/api/v1/transactions/{id}")
+    public ResponseEntity<?> update(@PathVariable(value = "id") Long id, @RequestBody TransactionDto transactionDto) {
+        Transaction transaction = transactionRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        account.setName(accountEntityDto.name());
-        accountRepository.save(account);
+        transaction.setComment(transactionDto.comment());
+        transactionRepository.save(transaction);
 
         return ResponseEntity
                 .noContent()
                 .build();
     }
 
-    @DeleteMapping("/api/v1/accounts/{id}")
+    @DeleteMapping("/api/v1/transactions/{id}")
     public ResponseEntity<?> remove(@PathVariable(value = "id") Long id) {
 
-        Optional<Account> account = accountRepository.findById(id);
+        Optional<Transaction> transaction = transactionRepository.findById(id);
 
-        account.ifPresent(accountRepository::remove);
+        transaction.ifPresent(transactionRepository::remove);
 
         return ResponseEntity
                 .accepted()

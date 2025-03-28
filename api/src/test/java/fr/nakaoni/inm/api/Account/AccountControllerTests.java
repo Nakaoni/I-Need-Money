@@ -2,9 +2,9 @@ package fr.nakaoni.inm.api.Account;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.nakaoni.inm.api.account.AccountEntity;
-import fr.nakaoni.inm.api.account.AccountEntityRepository;
+import fr.nakaoni.inm.api.account.AccountRepository;
 import fr.nakaoni.inm.api.bank.BankEntity;
-import fr.nakaoni.inm.api.bank.BankEntityRepository;
+import fr.nakaoni.inm.api.bank.BankRepository;
 import fr.nakaoni.inm.domain.account.Account;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,10 +29,10 @@ class AccountControllerTests {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private AccountEntityRepository accountEntityRepository;
+    private AccountRepository accountEntityRepository;
 
     @Autowired
-    private BankEntityRepository bankEntityRepository;
+    private BankRepository bankEntityRepository;
 
     @Test
     @DirtiesContext

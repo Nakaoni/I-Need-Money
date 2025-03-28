@@ -1,20 +1,39 @@
 package fr.nakaoni.inm.domain.transaction;
 
 import fr.nakaoni.inm.domain.account.Account;
+import jakarta.persistence.*;
 
 import java.time.Instant;
 import java.util.Objects;
 
+@Entity(name = "transaction")
 public class Transaction {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ManyToOne(targetEntity = Category.class)
     private Category category;
+
     private String payee;
+
+    @ManyToOne(targetEntity = Account.class)
     private Account account;
+
+    @Lob
     private String comment;
+
     private State state;
+
     private Type type;
+
+    @Embedded
     private Amount amount;
+
+    @Column(name = "created_at")
     private Instant createdAt;
+
+    @Column(name = "updated_at")
     private Instant updatedAt;
 
     public enum State {
@@ -27,8 +46,9 @@ public class Transaction {
         EXPENSE,
     }
 
-    public Transaction(Long id, Category category, String payee, Account account, Type type, Amount amount, Instant createdAt) {
-        this.id = id;
+    public Transaction() {}
+
+    public Transaction(Category category, String payee, Account account, Type type, Amount amount, Instant createdAt) {
         this.category = category;
         this.payee = payee;
         this.account = account;

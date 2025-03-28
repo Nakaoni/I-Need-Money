@@ -1,17 +1,25 @@
 package fr.nakaoni.inm.domain.account;
 
 import fr.nakaoni.inm.domain.bank.Bank;
+import jakarta.persistence.*;
 
 import java.util.Objects;
 
-public class Account {
-    private final Long id;
+@Entity(name = "account")
+public final class Account {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String name;
+
+    @ManyToOne(targetEntity = Bank.class)
     private Bank bank;
+
     private AccountType type;
 
-    public Account(Long id, String name, Bank bank, AccountType type) {
-        this.id = id;
+    public Account() {}
+
+    public Account(String name, Bank bank, AccountType type) {
         this.name = name;
         this.bank = bank;
         this.type = type;

@@ -1,16 +1,24 @@
 package fr.nakaoni.inm.domain.transaction;
 
 import fr.nakaoni.inm.domain.account.Account;
+import jakarta.persistence.*;
 
 import java.util.Objects;
 
+@Entity(name = "category")
 public class Category {
-    private final Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String name;
+
+    @ManyToOne(targetEntity = Account.class)
     private Account account;
 
-    public Category(Long id, String name, Account account) {
-        this.id = id;
+    public Category() {}
+
+    public Category(String name, Account account) {
         this.name = name;
         this.account = account;
     }

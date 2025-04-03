@@ -1,7 +1,6 @@
 package fr.nakaoni.inm.api.bank;
 
 import fr.nakaoni.inm.domain.bank.Bank;
-import fr.nakaoni.inm.domain.bank.BankRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +9,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -23,7 +23,9 @@ public class BankController {
 
     @GetMapping("/api/v1/banks")
     public Set<Bank> all() {
-        return bankRepository.findAll();
+        Set<Bank> banks = new HashSet<>();
+        bankRepository.findAll().forEach(banks::add);
+        return banks;
     }
 
     @PostMapping("/api/v1/banks")
@@ -69,7 +71,7 @@ public class BankController {
 
         Optional<Bank> bank = bankRepository.findById(id);
 
-        bank.ifPresent(bankRepository::remove);
+        bank.ifPresent(bankRepository::delete);
 
         return ResponseEntity
                 .accepted()

@@ -1,11 +1,10 @@
 package fr.nakaoni.inm.api.Account;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import fr.nakaoni.inm.api.account.AccountEntity;
 import fr.nakaoni.inm.api.account.AccountRepository;
-import fr.nakaoni.inm.api.bank.BankEntity;
 import fr.nakaoni.inm.api.bank.BankRepository;
 import fr.nakaoni.inm.domain.account.Account;
+import fr.nakaoni.inm.domain.bank.Bank;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -29,22 +28,22 @@ class AccountControllerTests {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private AccountRepository accountEntityRepository;
+    private AccountRepository accountRepository;
 
     @Autowired
-    private BankRepository bankEntityRepository;
+    private BankRepository bankRepository;
 
     @Test
     @DirtiesContext
     void show() throws Exception {
-        BankEntity boursoramaBankEntity = new BankEntity("Boursorama");
-        bankEntityRepository.save(boursoramaBankEntity);
+        Bank bank = new Bank("Boursorama");
+        bankRepository.save(bank);
 
-        AccountEntity accountEntity = new AccountEntity("Compte Couant", boursoramaBankEntity, Account.AccountType.CHECKING);
-        accountEntityRepository.save(accountEntity);
+        Account account = new Account("Compte Courant", bank, Account.AccountType.CHECKING);
+        accountRepository.save(account);
 
-        AccountEntity expectedAccountEntity = new AccountEntity(1L, "Compte Couant", boursoramaBankEntity, Account.AccountType.CHECKING);
-        String expectedAccountEntityJson = objectMapper.writeValueAsString(expectedAccountEntity);
+        Account expectedAccount = new Account("Compte Courant", bank, Account.AccountType.CHECKING);
+        String expectedAccountJson = objectMapper.writeValueAsString(expectedAccount);
 
         mvc.perform(
                         MockMvcRequestBuilders
@@ -53,7 +52,7 @@ class AccountControllerTests {
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().json(expectedAccountEntityJson))
+                .andExpect(content().json(expectedAccountJson))
         ;
     }
 

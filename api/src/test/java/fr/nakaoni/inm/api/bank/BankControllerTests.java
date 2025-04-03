@@ -1,6 +1,7 @@
 package fr.nakaoni.inm.api.bank;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import fr.nakaoni.inm.domain.bank.Bank;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -12,6 +13,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -29,51 +31,50 @@ class BankControllerTests {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private BankRepository bankEntityRepository;
+    private BankRepository bankRepository;
 
     @Test
     @DirtiesContext
     void show() throws Exception {
-        BankEntity boursoramaBankEntity = new BankEntity("Boursorama");
-        bankEntityRepository.save(boursoramaBankEntity);
+        Bank boursoramaBankEntity = new Bank("Boursorama");
+        bankRepository.save(boursoramaBankEntity);
 
-        BankEntity bankEntity = new BankEntity(1L, "Boursorama");
-
-        String bankEntityJson = objectMapper.writeValueAsString(bankEntity);
+        Bank bank = new Bank("Boursorama");
+        String bankJson = objectMapper.writeValueAsString(bank);
 
         mvc.perform(
                         MockMvcRequestBuilders
-                                .request(HttpMethod.GET, "/api/v1/accounts/1")
+                                .request(HttpMethod.GET, "/api/v1/banks/1")
                                 .accept(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().json(bankEntityJson))
+                .andExpect(content().json(bankJson))
         ;
     }
 
     @Test
     @DirtiesContext
     void create() throws Exception {
-        BankEntity bankEntity = new BankEntity("BforBank");
-        String bankEntityJson = objectMapper.writeValueAsString(bankEntity);
+        Bank bank = new Bank("BforBank");
+        String bankJson = objectMapper.writeValueAsString(bank);
 
-        BankEntity expectedBankEntity = new BankEntity(1L, "BforBank");
-        String expectedBankEntityJson = objectMapper.writeValueAsString(expectedBankEntity);
+        Bank expectedBank = new Bank("BforBank");
+        String expectedBankJson = objectMapper.writeValueAsString(expectedBank);
 
         mvc.perform(
                         MockMvcRequestBuilders
-                                .post("/api/v1/accounts")
+                                .post("/api/v1/banks")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(bankEntityJson)
+                                .content(bankJson)
                 )
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().json(expectedBankEntityJson))
+                .andExpect(content().json(expectedBankJson))
                 .andExpect(header().string(
                         HttpHeaders.LOCATION,
-                        fromMethodName(BankController.class, "show", expectedBankEntity.id())
+                        fromMethodName(BankController.class, "show", 1L)
                                 .build()
                                 .toUriString()
                 ))
@@ -83,42 +84,42 @@ class BankControllerTests {
     @Test
     @DirtiesContext
     void all() throws Exception {
-        BankEntity boursoramaBankEntity = new BankEntity("Boursorama");
-        bankEntityRepository.save(boursoramaBankEntity);
+        Bank bank1 = new Bank("Boursorama");
+        bankRepository.save(bank1);
 
-        BankEntity fortuneoBankEntity = new BankEntity("Fortuneo");
-        bankEntityRepository.save(fortuneoBankEntity);
+        Bank bank2 = new Bank("Fortuneo");
+        bankRepository.save(bank2);
 
-        List<BankEntity> expectedBankEntities = List.of(
-                new BankEntity(1L, "Boursorama"),
-                new BankEntity(2L, "Fortuneo")
-        );
-        String expectedBankEntitiesJson = objectMapper.writeValueAsString(expectedBankEntities);
+        Bank expectedBank1 = new Bank("Boursorama");
+        Bank expectedBank2 = new Bank("Fortuneo");
+
+        List<Bank> expectedBanks = List.of(expectedBank1, expectedBank2);
+        String expectedBanksJson = objectMapper.writeValueAsString(expectedBanks);
 
         mvc.perform(
                         MockMvcRequestBuilders
-                                .get("/api/v1/accounts")
+                                .get("/api/v1/banks")
                                 .accept(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().json(expectedBankEntitiesJson))
+                .andExpect(content().json(expectedBanksJson))
         ;
     }
 
     @Test
     @DirtiesContext
     void update() throws Exception {
-        BankEntity boursoramaBankEntity = new BankEntity("Crédit Agricole");
-        bankEntityRepository.save(boursoramaBankEntity);
+        Bank bank = new Bank("Crédit Agricole");
+        bankRepository.save(bank);
 
-        BankEntity expectedBankEntity = new BankEntity(1L, "Boursorama");
+        Bank expectedBank = new Bank("Boursorama");
 
         String content = "{\"name\": \"Boursorama\"}";
 
         mvc.perform(
                         MockMvcRequestBuilders
-                                .patch("/api/v1/accounts/1")
+                                .patch("/api/v1/banks/1")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(content)
@@ -126,18 +127,18 @@ class BankControllerTests {
                 .andExpect(status().isNoContent())
         ;
 
-        assertEquals(expectedBankEntity, bankEntityRepository.findById(1L).orElseThrow());
+        assertEquals(expectedBank, bankRepository.findById(1L).orElseThrow());
     }
 
     @Test
     @DirtiesContext
     void remove() throws Exception {
-        BankEntity boursoramaBankEntity = new BankEntity("Crédit Agricole");
-        bankEntityRepository.save(boursoramaBankEntity);
+        Bank bank = new Bank("Crédit Agricole");
+        bankRepository.save(bank);
 
         mvc.perform(
                         MockMvcRequestBuilders
-                                .delete("/api/v1/accounts/1")
+                                .delete("/api/v1/banks/1")
                                 .accept(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isAccepted())
@@ -149,7 +150,7 @@ class BankControllerTests {
     void removeNonExisting() throws Exception {
         mvc.perform(
                         MockMvcRequestBuilders
-                                .delete("/api/v1/accounts/666")
+                                .delete("/api/v1/banks/666")
                                 .accept(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isAccepted())

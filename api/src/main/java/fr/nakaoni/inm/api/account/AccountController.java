@@ -9,6 +9,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -22,7 +23,10 @@ public class AccountController {
 
     @GetMapping("/api/v1/accounts")
     public Set<Account> all() {
-        return accountRepository.findAll();
+        Set<Account> accounts = new HashSet<>();
+        accountRepository.findAll().forEach(accounts::add);
+
+        return accounts;
     }
 
     @PostMapping("/api/v1/accounts")
@@ -68,7 +72,7 @@ public class AccountController {
 
         Optional<Account> account = accountRepository.findById(id);
 
-        account.ifPresent(accountRepository::remove);
+        account.ifPresent(accountRepository::delete);
 
         return ResponseEntity
                 .accepted()

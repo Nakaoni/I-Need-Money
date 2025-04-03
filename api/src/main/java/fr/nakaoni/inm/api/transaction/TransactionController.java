@@ -9,6 +9,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -22,7 +23,10 @@ public class TransactionController {
 
     @GetMapping("/api/v1/transactions")
     public Set<Transaction> all() {
-        return transactionRepository.findAll();
+        Set<Transaction> transactions = new HashSet<>();
+        transactionRepository.findAll().forEach(transactions::add);
+
+        return transactions;
     }
 
     @PostMapping("/api/v1/transactions")
@@ -75,7 +79,7 @@ public class TransactionController {
 
         Optional<Transaction> transaction = transactionRepository.findById(id);
 
-        transaction.ifPresent(transactionRepository::remove);
+        transaction.ifPresent(transactionRepository::delete);
 
         return ResponseEntity
                 .accepted()

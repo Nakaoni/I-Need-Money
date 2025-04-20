@@ -1,6 +1,6 @@
 package fr.nakaoni.inm.api.transaction;
 
-import fr.nakaoni.inm.domain.transaction.Transaction;
+import fr.nakaoni.inm.domain.entity.Transaction;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

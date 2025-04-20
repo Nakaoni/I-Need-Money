@@ -12,7 +12,7 @@ mvn compile
 ### Rest API application
 
 ```shell
-(cd api && mvn clean springboot:run)
+(cd api && mvn clean spring-boot:run)
 ```
 
 ### Desktop application

@@ -1,14 +1,16 @@
 package fr.nakaoni.inm.api.Account;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import fr.nakaoni.inm.api.account.AccountController;
 import fr.nakaoni.inm.api.account.AccountRepository;
 import fr.nakaoni.inm.api.bank.BankRepository;
-import fr.nakaoni.inm.domain.account.Account;
-import fr.nakaoni.inm.domain.bank.Bank;
+import fr.nakaoni.inm.domain.entity.Account;
+import fr.nakaoni.inm.domain.entity.Bank;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
@@ -16,6 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.fromMethodName;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -56,34 +59,34 @@ class AccountControllerTests {
         ;
     }
 
-//    @Test
-//    @DirtiesContext
-//    void create() throws Exception {
-//        BankEntity bankEntity = new BankEntity("BforBank");
-//        String bankEntityJson = objectMapper.writeValueAsString(bankEntity);
-//
-//        BankEntity expectedBankEntity = new BankEntity(1L, "BforBank");
-//        String expectedBankEntityJson = objectMapper.writeValueAsString(expectedBankEntity);
-//
-//        mvc.perform(
-//                        MockMvcRequestBuilders
-//                                .post("/api/v1/accounts")
-//                                .accept(MediaType.APPLICATION_JSON)
-//                                .contentType(MediaType.APPLICATION_JSON)
-//                                .content(bankEntityJson)
-//                )
-//                .andExpect(status().isCreated())
-//                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(content().json(expectedBankEntityJson))
-//                .andExpect(header().string(
-//                        HttpHeaders.LOCATION,
-//                        fromMethodName(BankController.class, "show", expectedBankEntity.id())
-//                                .build()
-//                                .toUriString()
-//                ))
-//        ;
-//    }
-//
+    @Test
+    @DirtiesContext
+    void create() throws Exception {
+        Bank bank = new Bank("BforBank");
+        String bankJson = objectMapper.writeValueAsString(bank);
+
+        Account account = new Account("Compte Courant", bank, Account.AccountType.CHECKING);
+        String accountJson = objectMapper.writeValueAsString(account);
+
+        mvc.perform(
+                        MockMvcRequestBuilders
+                                .post("/api/v1/accounts")
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(bankJson)
+                )
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().json(accountJson))
+                .andExpect(header().string(
+                        HttpHeaders.LOCATION,
+                        fromMethodName(AccountController.class, "show", account.id())
+                                .build()
+                                .toUriString()
+                ))
+        ;
+    }
+
 //    @Test
 //    @DirtiesContext
 //    void all() throws Exception {

@@ -1,4 +1,4 @@
-package fr.nakaoni.inm.domain.transaction;
+package fr.nakaoni.inm.domain.entity;
 
 import org.junit.jupiter.api.Test;
 

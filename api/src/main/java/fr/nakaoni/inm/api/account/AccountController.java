@@ -1,6 +1,6 @@
 package fr.nakaoni.inm.api.account;
 
-import fr.nakaoni.inm.domain.account.Account;
+import fr.nakaoni.inm.domain.entity.Account;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

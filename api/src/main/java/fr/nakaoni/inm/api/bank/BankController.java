@@ -30,9 +30,9 @@ public class BankController {
 
     @PostMapping("/api/v1/banks")
     public ResponseEntity<Bank> create(@RequestBody Bank createBankRequest) {
-        Bank bank = new Bank(createBankRequest.name());
+        Bank newBank = new Bank(null, createBankRequest.name());
 
-        bank = bankRepository.save(bank);
+        Bank bank = bankRepository.save(newBank);
 
         URI bankUri = showUri(bank.id());
 
@@ -58,7 +58,7 @@ public class BankController {
     public ResponseEntity<?> update(@PathVariable(value = "id") Long id, @RequestBody BankDto bankDto) {
         Bank bank = bankRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        bank.setName(bankDto.name());
+        bank.rename(bankDto.name());
         bankRepository.save(bank);
 
         return ResponseEntity

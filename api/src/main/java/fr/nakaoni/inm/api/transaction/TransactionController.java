@@ -31,16 +31,19 @@ public class TransactionController {
 
     @PostMapping("/api/v1/transactions")
     public ResponseEntity<Transaction> create(@RequestBody Transaction createTransactionRequest) {
-        Transaction transaction = new Transaction(
+        Transaction newTransaction = new Transaction(
+                null,
                 createTransactionRequest.category(),
                 createTransactionRequest.payee(),
                 createTransactionRequest.account(),
+                createTransactionRequest.description(),
+                createTransactionRequest.state(),
                 createTransactionRequest.type(),
                 createTransactionRequest.amount(),
                 createTransactionRequest.createdAt()
         );
 
-        transaction = transactionRepository.save(transaction);
+        Transaction transaction = transactionRepository.save(newTransaction);
 
         URI accountUri = showUri(transaction.id());
 
@@ -66,7 +69,7 @@ public class TransactionController {
     public ResponseEntity<?> update(@PathVariable(value = "id") Long id, @RequestBody TransactionDto transactionDto) {
         Transaction transaction = transactionRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        transaction.setComment(transactionDto.comment());
+        transaction.describe(transactionDto.description());
         transactionRepository.save(transaction);
 
         return ResponseEntity

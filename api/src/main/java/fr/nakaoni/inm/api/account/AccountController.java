@@ -31,9 +31,9 @@ public class AccountController {
 
     @PostMapping("/api/v1/accounts")
     public ResponseEntity<Account> create(@RequestBody Account createAccountRequest) {
-        Account account = new Account(createAccountRequest.name(), createAccountRequest.bank(), createAccountRequest.type());
+        Account newAccount = new Account(null, createAccountRequest.name(), createAccountRequest.bank(), createAccountRequest.type());
 
-        account = accountRepository.save(account);
+        Account account = accountRepository.save(newAccount);
 
         URI accountUri = showUri(account.id());
 
@@ -59,7 +59,7 @@ public class AccountController {
     public ResponseEntity<?> update(@PathVariable(value = "id") Long id, @RequestBody AccountDto accountDto) {
         Account account = accountRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        account.setName(accountDto.name());
+        account.rename(accountDto.name());
         accountRepository.save(account);
 
         return ResponseEntity

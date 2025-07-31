@@ -1,3 +1,4 @@
 package fr.nakaoni.inm.api.transaction;
 
-public record TransactionDto(String comment) {}
+public record TransactionDto(String description) {
+}
